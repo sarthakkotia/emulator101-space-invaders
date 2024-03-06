@@ -459,22 +459,20 @@ int fx(vector<uint8_t>&buffer,int pc){
             opbytes =3;
             break;
         case 0xc3:
-            break;
             cout<<"JMP #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
-            break;
             opbytes=3;
             break;
-            break;
-            break;
         case 0xc4:
+            cout<<"CNZ #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xc5:
-            break;
             cout<<"PUSH B"<<endl;
             // (sp-2)<-C; (sp-1)<-B; sp <- sp - 2
             break;
-            break;
         case 0xc6:
+            cout<<"ADI #"<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes=2;
             break;
         case 0xc7:
             break;
@@ -483,16 +481,22 @@ int fx(vector<uint8_t>&buffer,int pc){
         case 0xc9:
             break;
         case 0xca:
+            cout<<"JZ #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xcb:
             break;
         case 0xcc:
+            cout<<"CZ #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xcd:
             cout<<"CALL #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
             opbytes=3;
             break;
         case 0xce:
+            cout<<"ACI #"<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes=2;
             break;
         case 0xcf:
             break;
@@ -501,16 +505,24 @@ int fx(vector<uint8_t>&buffer,int pc){
         case 0xd1:
             break;
         case 0xd2:
+            cout<<"JNC #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xd3:
+            cout<<"OUT #"<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes=2;
             break;
         case 0xd4:
+            cout<<"CNC #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xd5:
             cout<<"PUSH D"<<endl;
             // (sp-2)<-E; (sp-1)<-D; sp <- sp - 2
             break;
         case 0xd6:
+            cout<<"SUI #"<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes=2;
             break;
         case 0xd7:
             break;
@@ -519,16 +531,22 @@ int fx(vector<uint8_t>&buffer,int pc){
         case 0xd9:
             break;
         case 0xda:
+            cout<<"JC #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xdb:
             cout<<"IN #"<<hex<<(int)buffer[pc+1]<<endl;
             opbytes=2;
             break;
         case 0xdc:
+            cout<<"CC #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xdd:
             break;
         case 0xde:
+            cout<<"SBI #"<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes=2;
             break;
         case 0xdf:
             break;
@@ -537,16 +555,22 @@ int fx(vector<uint8_t>&buffer,int pc){
         case 0xe1:
             break;
         case 0xe2:
+            cout<<"JPO #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xe3:
             break;
         case 0xe4:
+            cout<<"CPO #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xe5:
              cout<<"PUSH H"<<endl;
             //  (sp-2)<-L; (sp-1)<-H; sp <- sp - 2
             break;
         case 0xe6:
+            cout<<"ANI #"<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes=2;
             break;
         case 0xe7:
             break;
@@ -555,14 +579,20 @@ int fx(vector<uint8_t>&buffer,int pc){
         case 0xe9:
             break;
         case 0xea:
+            cout<<"JPE #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xeb:
             break;
         case 0xec:
+            cout<<"CPE #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xed:
             break;
         case 0xee:
+            cout<<"XRI #"<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes=2;
             break;
         case 0xef:
             break;
@@ -571,16 +601,22 @@ int fx(vector<uint8_t>&buffer,int pc){
         case 0xf1:
             break;
         case 0xf2:
+            cout<<"JP #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xf3:
             break;
         case 0xf4:
+            cout<<"CP #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xf5:
             cout<<"PUSH PSW"<<endl;
             // (sp-2)<-flags; (sp-1)<-A; sp <- sp - 2
             break;
         case 0xf6:
+            cout<<"ORI #"<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes=2;
             break;
         case 0xf7:
             break;
@@ -589,14 +625,20 @@ int fx(vector<uint8_t>&buffer,int pc){
         case 0xf9:
             break;
         case 0xfa:
+            cout<<"JM #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xfb:
             break;
         case 0xfc:
+            cout<<"CM #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes =3;
             break;
         case 0xfd:
             break;
         case 0xfe:
+            cout<<"CPI #"<<hex<<(int)buffer[pc+1]<<endl;
+            opbytes=2;
             break;
         case 0xff:
             break;
