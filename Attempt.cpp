@@ -14,6 +14,7 @@ int fx(vector<uint8_t>&buffer,int pc){
             cout<<"LXI B,#"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
             opbytes=3;
             break;
+            // B <- byte 3, C <- byte 2
         case 0x02:
             cout<<"STAX B"<<endl;
             break;
@@ -55,8 +56,6 @@ int fx(vector<uint8_t>&buffer,int pc){
         case 0x0f:
             cout<<"RRC"<<endl;
             break;
-        case 0x10:
-            break;
         case 0x11:
             cout<<"LXI D,#"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
             opbytes=3;
@@ -76,11 +75,8 @@ int fx(vector<uint8_t>&buffer,int pc){
             // 	MVI D, D8	2		D <- byte 2
             break;
         case 0x17:
-            break;
             cout<<"RAL"<<endl;
             // A = A << 1; bit 0 = prev CY; CY = prev bit 7
-            break;
-        case 0x18:
             break;
         case 0x19:
             break;
@@ -120,8 +116,6 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0x27:
             break;
-        case 0x28:
-            break;
         case 0x29:
             break;
         case 0x2a:
@@ -139,8 +133,6 @@ int fx(vector<uint8_t>&buffer,int pc){
             opbytes=2;
             break;
         case 0x2f:
-            break;
-        case 0x30:
             break;
         case 0x31:
             cout<<"LXI SP,#"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
@@ -164,8 +156,6 @@ int fx(vector<uint8_t>&buffer,int pc){
             opbytes=2;
             break;
         case 0x37:
-            break;
-        case 0x38:
             break;
         case 0x39:
             break;
@@ -484,8 +474,6 @@ int fx(vector<uint8_t>&buffer,int pc){
             cout<<"JZ #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
             opbytes =3;
             break;
-        case 0xcb:
-            break;
         case 0xcc:
             cout<<"CZ #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
             opbytes =3;
@@ -528,8 +516,6 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0xd8:
             break;
-        case 0xd9:
-            break;
         case 0xda:
             cout<<"JC #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
             opbytes =3;
@@ -541,8 +527,6 @@ int fx(vector<uint8_t>&buffer,int pc){
         case 0xdc:
             cout<<"CC #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
             opbytes =3;
-            break;
-        case 0xdd:
             break;
         case 0xde:
             cout<<"SBI #"<<hex<<(int)buffer[pc+1]<<endl;
@@ -588,8 +572,6 @@ int fx(vector<uint8_t>&buffer,int pc){
             cout<<"CPE #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
             opbytes =3;
             break;
-        case 0xed:
-            break;
         case 0xee:
             cout<<"XRI #"<<hex<<(int)buffer[pc+1]<<endl;
             opbytes=2;
@@ -633,8 +615,6 @@ int fx(vector<uint8_t>&buffer,int pc){
         case 0xfc:
             cout<<"CM #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
             opbytes =3;
-            break;
-        case 0xfd:
             break;
         case 0xfe:
             cout<<"CPI #"<<hex<<(int)buffer[pc+1]<<endl;
