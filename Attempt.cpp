@@ -14,7 +14,6 @@ int fx(vector<uint8_t>&buffer,int pc){
             cout<<"LXI B,#"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
             opbytes=3;
             break;
-            // B <- byte 3, C <- byte 2
         case 0x02:
             cout<<"STAX B"<<endl;
             break;
@@ -59,41 +58,49 @@ int fx(vector<uint8_t>&buffer,int pc){
         case 0x11:
             cout<<"LXI D,#"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
             opbytes=3;
-            // LXI D,D16	3		D <- byte 3, E <- byte 2
             break;
         case 0x12:
+            cout<<"STAX D"<<endl;
             break;
         case 0x13:
+            cout<<"INX D"<<endl;
             break;
         case 0x14:
+            cout<<"INR D"<<endl;
             break;
         case 0x15:
+            cout<<"DCR D"<<endl;
             break;
         case 0x16:
             cout<<"MVI D,#"<<hex<<(int)buffer[pc+1]<<endl;
             opbytes=2;
-            // 	MVI D, D8	2		D <- byte 2
             break;
         case 0x17:
             cout<<"RAL"<<endl;
-            // A = A << 1; bit 0 = prev CY; CY = prev bit 7
             break;
         case 0x19:
+            cout<<"DAD D"<<endl;
             break;
         case 0x1a:
+            cout<<"LDAX D"<<endl;
             break;
         case 0x1b:
+            cout<<"DCX D"<<endl;
             break;
         case 0x1c:
+            cout<<"INR E"<<endl;
             break;
         case 0x1d:
+            cout<<"DCR E"<<endl;
             break;
         case 0x1e:
             cout<<"MVI E,#"<<hex<<(int)buffer[pc+1]<<endl;
             opbytes=2;
             break;
         case 0x1f:
+            cout<<"RAR"<<endl;
             break;
+        
         case 0x20:
             break;
         case 0x21:
@@ -134,13 +141,13 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0x2f:
             break;
+        
         case 0x31:
             cout<<"LXI SP,#"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
             opbytes =3;
             break;
         case 0x32:
             cout<<"STA #"<<hex<<(int)buffer[pc+2]<<hex<<(int)buffer[pc+1]<<endl;
-            // (adr) <- A
             opbytes=3;
             break;
         case 0x33:
@@ -150,7 +157,6 @@ int fx(vector<uint8_t>&buffer,int pc){
         case 0x35:
             cout<<"DCR M";
             break;
-            // 	Z, S, P, AC	(HL) <- (HL)-1
         case 0x36:
             cout<<"MVI M,#"<<hex<<(int)buffer[pc+1]<<endl;
             opbytes=2;
@@ -175,6 +181,7 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0x3f:
             break;
+        
         case 0x40:
             break;
         case 0x41:
@@ -207,6 +214,7 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0x4f:
             break;
+        
         case 0x50:
             break;
         case 0x51:
@@ -239,6 +247,7 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0x5f:
             break;
+        
         case 0x60:
             break;
         case 0x61:
@@ -271,14 +280,13 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0x6f:
             break;
+        
         case 0x70:
             break;
         case 0x71:
             break;
         case 0x72:
             cout<<"MOV M,D"<<endl;
-            // (HL) <- D
-            break;
             break;
         case 0x73:
             break;
@@ -306,9 +314,9 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0x7f:
             break;
+        
         case 0x80:
             cout<<"ADD B"<<endl;
-            // Z, S, P, CY, AC	A <- A + B
             break;
         case 0x81:
             break;
@@ -334,7 +342,6 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0x8c:
             cout<<"ADC H"<<endl;
-            // 	A <- A + H + CY
             break;
         case 0x8d:
             break;
@@ -342,6 +349,7 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0x8f:
             break;
+        
         case 0x90:
             break;
         case 0x91:
@@ -376,6 +384,7 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0xa0:
             break;
+        
         case 0xa1:
             break;
         case 0xa2:
@@ -406,6 +415,7 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0xaf:
             break;
+        
         case 0xb0:
             break;
         case 0xb1:
@@ -438,9 +448,9 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0xbf:
             break;
+        
         case 0xc0:
             cout<<"RNZ"<<endl;
-            // if NZ, RET
             break;
         case 0xc1:
             break;
@@ -458,7 +468,6 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0xc5:
             cout<<"PUSH B"<<endl;
-            // (sp-2)<-C; (sp-1)<-B; sp <- sp - 2
             break;
         case 0xc6:
             cout<<"ADI #"<<hex<<(int)buffer[pc+1]<<endl;
@@ -488,6 +497,7 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0xcf:
             break;
+        
         case 0xd0:
             break;
         case 0xd1:
@@ -506,7 +516,6 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0xd5:
             cout<<"PUSH D"<<endl;
-            // (sp-2)<-E; (sp-1)<-D; sp <- sp - 2
             break;
         case 0xd6:
             cout<<"SUI #"<<hex<<(int)buffer[pc+1]<<endl;
@@ -534,6 +543,7 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0xdf:
             break;
+        
         case 0xe0:
             break;
         case 0xe1:
@@ -550,7 +560,6 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0xe5:
              cout<<"PUSH H"<<endl;
-            //  (sp-2)<-L; (sp-1)<-H; sp <- sp - 2
             break;
         case 0xe6:
             cout<<"ANI #"<<hex<<(int)buffer[pc+1]<<endl;
@@ -578,6 +587,7 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0xef:
             break;
+        
         case 0xf0:
             break;
         case 0xf1:
@@ -594,7 +604,6 @@ int fx(vector<uint8_t>&buffer,int pc){
             break;
         case 0xf5:
             cout<<"PUSH PSW"<<endl;
-            // (sp-2)<-flags; (sp-1)<-A; sp <- sp - 2
             break;
         case 0xf6:
             cout<<"ORI #"<<hex<<(int)buffer[pc+1]<<endl;
