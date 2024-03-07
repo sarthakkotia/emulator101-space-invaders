@@ -6,6 +6,7 @@ using namespace std;
 int fx(vector<uint8_t>&buffer,int pc){
     int opbytes=1;
     uint8_t code= buffer[pc];
+    cout<<hex<<pc<<"    ";
     switch(code){
         case 0x00:
             cout<<"NOP"<<endl;
@@ -49,7 +50,7 @@ int fx(vector<uint8_t>&buffer,int pc){
             cout<<"DCR C"<<endl;
             break;
         case 0x0e:
-            cout<<"MVI D,#"<<hex<<(int)buffer[pc+1]<<endl;
+            cout<<"MVI C,#"<<hex<<(int)buffer[pc+1]<<endl;
             opbytes=2;
             break;
         case 0x0f:
@@ -164,7 +165,7 @@ int fx(vector<uint8_t>&buffer,int pc){
             cout<<"INR M"<<endl;
             break;
         case 0x35:
-            cout<<"DCR M";
+            cout<<"DCR M"<<endl;
             break;
         case 0x36:
             cout<<"MVI M,#"<<hex<<(int)buffer[pc+1]<<endl;
@@ -798,18 +799,19 @@ int fx(vector<uint8_t>&buffer,int pc){
             cout<<"RST 7"<<endl;
             break;
         default:
-            cout<<"-"<<endl;
+            cout<<"NOP"<<endl;
             break;
     }
     int var = buffer[pc];
     // int code = 0xvar;
-    cout<<"program counter right now:"<<pc<<endl;
-    cout<<"byte read:"<<hex<<var<<endl;
+    // cout<<"program counter right now:"<<pc<<endl;
+    // cout<<"byte read:"<<hex<<var<<endl;
         return opbytes;
 }
 
 int main(){
     string s= "space-invaders.rom";
+    // string s= "invaders.h";
     ifstream file;
     file.open(s,ios::binary|ios::in);
     if(file.is_open()==false){
@@ -833,5 +835,9 @@ int main(){
             pc+=fx(buffer,pc);
         }
     }
-    return 0;
+    int n;
+    cin>>n;
+    if(n==0){
+        return 0;
+    }
 }
