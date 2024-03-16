@@ -1,12 +1,13 @@
 #include<iostream>
 #include <fstream>
 #include<vector>
+#include <iomanip>
 using namespace std;
 
 int fx(vector<uint8_t>&buffer,int pc){
     int opbytes=1;
     uint8_t code= buffer[pc];
-    cout<<hex<<pc<<"    ";
+    cout<<uppercase<<setfill('0')<<setw(4)<<hex<<pc<<" ";
     switch(code){
         case 0x00:
             cout<<"NOP"<<endl;
