@@ -4,7 +4,7 @@
 #include <iomanip>
 using namespace std;
 
-int fx(vector<uint8_t>&buffer,int pc){
+int fx(uint8_t *buffer,int pc){
     int opbytes=1;
     uint8_t code= buffer[pc];
     cout<<uppercase<<setfill('0')<<setw(4)<<hex<<pc<<" ";
@@ -825,7 +825,8 @@ int main(){
         int fsize = file.tellg();
         // reset the seek to be at the beginning
         file.seekg(0,ios::beg);
-        vector<uint8_t>buffer(fsize,0);
+        uint8_t buffer[fsize]={0};
+        // vector<uint8_t>buffer(fsize,0);
         for(int i=0;i<fsize;i++){
             // read each character of file in integar and save it in buffer
             buffer[i] = (uint8_t)file.get();
