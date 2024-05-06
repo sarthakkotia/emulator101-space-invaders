@@ -851,6 +851,7 @@ void Emulate(State& state){
      uint8_t opcode = state.memory[pc];
      disassemble(state.memory,pc);
      state.pc+=1;
+     pc=state.pc;
      switch(opcode){
          case 0x00:
              //NOP
@@ -894,7 +895,6 @@ void Emulate(State& state){
             }
             state.b = answer;
             // state->flag.Parity()
-
             // Parity is handled by a subroutine    
             // Parity( answer & 0xff) ? state->flag.p = 1 : state->flag.p = 0;
         }
@@ -902,7 +902,8 @@ void Emulate(State& state){
         case 0x06:
         //MVI B
         {
-
+            state.b=state.memory[pc];
+            state.pc+=1;
         }
             break;
         case 0x07:
@@ -922,6 +923,7 @@ void Emulate(State& state){
             }else{
                 state.flag.cy=0;
             }
+            //A bit different code here may cause error
             state.h = (res&0xff00)<<8;
             state.l = res&0xff;
         }
@@ -945,19 +947,32 @@ void Emulate(State& state){
             }else{
                 state.flag.z=0;
             }
-            if(ans&0x80){
+            if((ans&0x80)==0x80){
                 state.flag.s=1;
             }else{
                 state.flag.s=0;
             }
+            //implement parity
             state.c=ans;
         }
             break;
         case 0x0e:
-            UnimplementedInstruction(state); 
+        {
+            //MVI C,ADR
+            state.c=state.memory[pc];
+            state.pc+=1;
+        }
             break;
         case 0x0f:
         {
+            uint8_t x = state.a;
+            //take the last bit and shift to left 7 time and then or the value with right shifted 1 bit
+            state.a = ((x&1)<<7|(x>>1));
+            if((x&1)==1){
+                state.flag.cy=1;
+            }else{
+                state.flag.cy=0;
+            }
             //RRC
 
         }
@@ -966,6 +981,12 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x11:
+        {
+            //LXI D,D16
+            state.e = state.memory[pc];
+            state.d=state.memory[pc+1];
+            state.pc+=2;
+        }
             UnimplementedInstruction(state); 
             break;
         case 0x12:
@@ -1010,13 +1031,18 @@ void Emulate(State& state){
             }else{
                 state.flag.cy=0;
             }
+            //may cuase problems
             state.h = (res&0xff00)<<8;
             state.l = res&0xff;
 
         } 
             break;
         case 0x1a:
-            UnimplementedInstruction(state); 
+        {
+            //LDAX D
+            uint16_t ptr = state.memory[state.d]<<8|state.memory[state.e];
+            state.a = state.memory[ptr];
+        }
             break;
         case 0x1b:
             UnimplementedInstruction(state); 
@@ -1037,7 +1063,12 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x21:
-            UnimplementedInstruction(state); 
+        {
+            //LXI H,D16
+            state.l = state.memory[pc];
+            state.h = state.memory[pc+1];
+            state.pc+=2;
+        }
             break;
         case 0x22:
             UnimplementedInstruction(state); 
@@ -1063,7 +1094,11 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x26:
-            UnimplementedInstruction(state); 
+        {
+            //MVI H,D8
+            state.h =  state.memory[pc];
+            state.pc +=1;
+        }
             break;
         case 0x27:
             UnimplementedInstruction(state); 
@@ -1107,10 +1142,19 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x31:
-            UnimplementedInstruction(state); 
+        {
+            //LXI SP,D16
+            state.sp = state.memory[pc+1]<<8|state.memory[pc];
+            state.pc+=1;
+        }
             break;
         case 0x32:
-            UnimplementedInstruction(state); 
+        {
+            //STA address
+            uint16_t ptr = state.memory[pc+1]<<8|state.memory[pc];
+            state.memory[ptr] = state.a;
+            state.pc+=2;
+        }
             break;
         case 0x33:
             UnimplementedInstruction(state); 
@@ -1122,7 +1166,12 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x36:
-            UnimplementedInstruction(state); 
+        {
+            //MVI M,D8
+            uint16_t ptr = (state.h<<8)|state.l;
+            state.memory[ptr] = state.memory[pc];
+            pc++;
+        }
             break;
         case 0x37:
             UnimplementedInstruction(state); 
@@ -1134,7 +1183,12 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x3a:
-            UnimplementedInstruction(state); 
+        {
+            //LDA ADR
+            uint16_t ptr = (state.memory[pc+1]<<8)|(state.memory[pc]);
+            state.a = state.memory[ptr];
+            pc+=2;
+        }
             break;
         case 0x3b:
             UnimplementedInstruction(state); 
@@ -1146,7 +1200,11 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x3e:
-            UnimplementedInstruction(state); 
+        {
+            //MVI A,D8
+            state.a = state.memory[pc];
+            pc+=1;
+        }
             break;
         case 0x3f:
             UnimplementedInstruction(state); 
@@ -1218,7 +1276,11 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x56:
-            UnimplementedInstruction(state); 
+        {
+            //MOV D,M
+            uint16_t ptr = state.h<<8|state.l;
+            state.d = state.memory[ptr];
+        }
             break;
         case 0x57:
             UnimplementedInstruction(state); 
@@ -1242,7 +1304,11 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x5e:
-            UnimplementedInstruction(state); 
+        {
+            //M0V E,M
+            uint16_t ptr = state.h<<8|state.l;
+            state.e=state.memory[ptr];
+        }
             break;
         case 0x5f:
             UnimplementedInstruction(state); 
@@ -1266,7 +1332,11 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x66:
-            UnimplementedInstruction(state); 
+        {
+            //MOV H,M
+            uint16_t ptr = state.h<<8|state.l;
+            state.h=state.memory[ptr];
+        }
             break;
         case 0x67:
             UnimplementedInstruction(state); 
@@ -1293,7 +1363,10 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x6f:
-            UnimplementedInstruction(state); 
+        {
+            //MOV L,A
+            state.l=state.a;
+        }
             break;
         case 0x70:
             UnimplementedInstruction(state); 
@@ -1317,7 +1390,11 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x77:
-            UnimplementedInstruction(state); 
+        {
+            //MOV M,A
+            uint16_t ptr = state.h<<8|state.l;
+            state.memory[ptr]=state.a;
+        }
             break;
         case 0x78:
             UnimplementedInstruction(state); 
@@ -1326,19 +1403,32 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0x7a:
-            UnimplementedInstruction(state); 
+        {
+            //MOV A,D
+            state.a=state.d;
+        }
             break;
         case 0x7b:
-            UnimplementedInstruction(state); 
+        {
+            //MOV A,E
+            state.a=state.e;
+        }
             break;
         case 0x7c:
-            UnimplementedInstruction(state); 
+        {
+            //MOV A,H
+            state.a=state.h;
+        }
             break;
         case 0x7d:
             UnimplementedInstruction(state); 
             break;
         case 0x7e:
-            UnimplementedInstruction(state); 
+        {
+            //MOV A,M
+            uint16_t ptr = state.h<<8|state.l;
+            state.a=state.memory[ptr];
+        }
             break;
         case 0x7f:
             UnimplementedInstruction(state); 
@@ -1504,7 +1594,20 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0xa7:
-            UnimplementedInstruction(state); 
+        {
+            //ANA A
+            state.a = state.a&state.a;
+            state.flag.ac=0;
+            state.flag.cy=0;
+            if(state.a==0){
+                state.flag.z=1;
+            }else{
+                state.flag.z=0;
+            }
+            state.flag.s=(0x80==(state.a&0x80));
+            // implememt parity
+
+        }
             break;
         case 0xa8:
             UnimplementedInstruction(state); 
@@ -1528,6 +1631,20 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0xaf:
+        {
+            //XRA A
+            state.a=state.a^state.a;
+            state.flag.ac=0;
+            state.flag.cy=0;
+            if(state.a==0){
+                state.flag.z=1;
+            }else{
+                state.flag.z=0;
+            }
+            state.flag.s=(0x80==(state.a&0x80));
+            // implememt parity
+
+        }
             UnimplementedInstruction(state); 
             break;
         case 0xb0:
@@ -1582,7 +1699,12 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0xc1:
-            UnimplementedInstruction(state); 
+        {
+            //POP B
+            state.c=state.memory[state.sp];
+            state.b=state.memory[state.sp+1];
+            state.sp+=2;
+        }
             break;
         case 0xc2:
             //JNZ adr
@@ -1608,6 +1730,12 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0xc5:
+        {
+            //PUSH B
+            state.memory[state.sp-1]=state.b;
+            state.memory[state.sp-2]=state.c;
+            state.sp-=2;
+        }
             UnimplementedInstruction(state); 
             break;
         case 0xc6:
@@ -1669,18 +1797,33 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0xd1:
+        {
+            //POP D
+            state.e=state.memory[state.sp];
+            state.d=state.memory[state.sp+1];
+            state.sp+=2;
+        }
             UnimplementedInstruction(state); 
             break;
         case 0xd2:
             UnimplementedInstruction(state); 
             break;
         case 0xd3:
-            UnimplementedInstruction(state); 
+        {
+            //OUT D8
+            pc+=1;
+        }
             break;
         case 0xd4:
             UnimplementedInstruction(state); 
             break;
         case 0xd5:
+        {
+            //PUSH D
+            state.memory[state.sp-1]=state.d;
+            state.memory[state.sp-2]=state.e;
+            state.sp-=2;
+        }
             UnimplementedInstruction(state); 
             break;
         case 0xd6:
@@ -1717,7 +1860,12 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0xe1:
-            UnimplementedInstruction(state); 
+        {
+            //POP H
+            state.l = state.memory[state.sp];
+            state.h = state.memory[state.sp+1];
+            state.sp+=2;
+        }
             break;
         case 0xe2:
             UnimplementedInstruction(state); 
@@ -1729,10 +1877,29 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0xe5:
-            UnimplementedInstruction(state); 
+        {
+            //PUSH H
+            state.memory[state.sp-1]=state.h;
+            state.memory[state.sp-2]=state.l;
+            state.sp-=2;
+        }
             break;
         case 0xe6:
-            UnimplementedInstruction(state); 
+        {
+            //ANI D8
+            uint8_t add = state.memory[pc+1];
+            uint8_t x = state.a & add;
+            state.a=x;
+            state.flag.cy=0;
+            if(state.a==0){
+                state.flag.z=1;
+            }else{
+                state.flag.z=0;
+            }
+            state.flag.s=(0x80==(state.a&0x80));
+            // implememt parity
+            state.pc+=1;
+        }
             break;
         case 0xe7:
             UnimplementedInstruction(state); 
@@ -1747,7 +1914,15 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0xeb:
-            UnimplementedInstruction(state); 
+        {
+            //XCHG
+			uint8_t save1 = state.d;
+			uint8_t save2 = state.e;
+			state.d = state.h;
+			state.e = state.l;
+			state.h = save1;
+			state.l = save2;    
+        }
             break;
         case 0xec:
             UnimplementedInstruction(state); 
@@ -1765,7 +1940,40 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0xf1:
-            UnimplementedInstruction(state); 
+        {
+            //POP PSW
+            uint8_t psw = state.memory[state.sp];
+            if((psw & 0x01)==0x01){
+                state.flag.z=1;
+            }else{
+                state.flag.z=0;
+            }
+            if((psw & 0x02)==0x02){
+                state.flag.s=1;
+            }else{
+                state.flag.s=0;
+            } 
+            if((psw & 0x04)==0x04){
+                state.flag.p=1;
+            }else{
+                state.flag.p=0;
+            }  
+            if((psw & 0x08)==0x05){
+                state.flag.cy=1;
+            }else{
+                state.flag.cy=0;
+            }
+            if((psw & 0x10)==0x10){
+                state.flag.ac=1;
+            }else{
+                state.flag.ac=0;
+            }
+            state.sp+=2;
+            // state->cc.p  = (0x04 == (psw & 0x04));
+			// state->cc.cy = (0x05 == (psw & 0x08));
+			// state->cc.ac = (0x10 == (psw & 0x10));
+			// state->sp += 2;
+        }
             break;
         case 0xf2:
             UnimplementedInstruction(state); 
@@ -1777,7 +1985,21 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0xf5:
-            UnimplementedInstruction(state); 
+        {
+            //PUSH PSW
+            state.memory[state.sp-1]=state.a;
+            //psw is 
+            uint8_t psw = (
+                state.flag.z|
+                state.flag.s<<1|
+                state.flag.p<<2|
+                state.flag.cy<<3|
+                state.flag.ac<<4
+            );
+            state.memory[state.sp-2]=psw;
+            state.sp-=2;
+
+        }
             break;
         case 0xf6:
             UnimplementedInstruction(state); 
@@ -1795,6 +2017,10 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0xfb:
+        {
+            //EI
+            state.int_enable=1;
+        }
             UnimplementedInstruction(state); 
             break;
         case 0xfc:
@@ -1804,12 +2030,30 @@ void Emulate(State& state){
             UnimplementedInstruction(state); 
             break;
         case 0xfe:
-            UnimplementedInstruction(state); 
+        {
+            //CPI ADDR
+            uint8_t x = state.a - state.memory[pc+1];
+            if(x==0){
+                state.flag.z=1;
+            }else{
+                state.flag.z=0;
+            }
+            state.flag.s=(0x80==(x&0x80));
+            // implememt parity
+            if(x<state.memory[pc+1]){
+                state.flag.cy=1;
+            }else{
+                state.flag.cy=0;
+            }
+            state.pc++;
+
+        }
             break;
         case 0xff:
             UnimplementedInstruction(state); 
             break;    
 }
+    pc=state.pc;
     cout<<"CY->"<<(int)state.flag.cy<<" P->"<<(int)state.flag.p<<" S->"<<(int)state.flag.s<<" Z->"<<(int)state.flag.z<<endl;
     cout<<"A->"<<setw(2)<<setfill('0')<<hex<<(int)state.a;
     cout<<" B->"<<setw(2)<<setfill('0')<<hex<<(int)state.b;
