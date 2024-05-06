@@ -844,6 +844,19 @@ void UnimplementedInstruction(State& state){
     cout<<"Error: Unimplemented instruction"<<endl;
     // exit(1);
 }
+//couldn't understand parity
+int parity(int x, int size)
+{
+	int i;
+	int p = 0;
+	x = (x & ((1<<size)-1));
+	for (i=0; i<size; i++)
+	{
+		if (x & 0x1) p++;
+		x = x >> 1;
+	}
+	return (0 == (p & 0x1));
+}
 
 void Emulate(State& state){
      uint16_t pc = state.pc;
@@ -893,10 +906,8 @@ void Emulate(State& state){
             }else{
                 state.flag.s=0;
             }
+            state.flag.p=parity(answer,8);
             state.b = answer;
-            // state->flag.Parity()
-            // Parity is handled by a subroutine    
-            // Parity( answer & 0xff) ? state->flag.p = 1 : state->flag.p = 0;
         }
             break;
         case 0x06:
@@ -952,7 +963,7 @@ void Emulate(State& state){
             }else{
                 state.flag.s=0;
             }
-            //implement parity
+            state.flag.p=parity(ans,8);
             state.c=ans;
         }
             break;
@@ -1605,7 +1616,7 @@ void Emulate(State& state){
                 state.flag.z=0;
             }
             state.flag.s=(0x80==(state.a&0x80));
-            // implememt parity
+            state.flag.p=parity(state.a,8);
 
         }
             break;
@@ -1642,7 +1653,7 @@ void Emulate(State& state){
                 state.flag.z=0;
             }
             state.flag.s=(0x80==(state.a&0x80));
-            // implememt parity
+            state.flag.p=parity(state.a,8);
 
         }
             UnimplementedInstruction(state); 
@@ -1749,8 +1760,8 @@ void Emulate(State& state){
             }else{
                 state.flag.cy=0;
             }
+            state.flag.p=parity((answer&0xff),8);
             state.pc++;
-
         }
             break;
         case 0xc7:
@@ -1897,7 +1908,7 @@ void Emulate(State& state){
                 state.flag.z=0;
             }
             state.flag.s=(0x80==(state.a&0x80));
-            // implememt parity
+            state.flag.p=parity(state.a,8);
             state.pc+=1;
         }
             break;
@@ -2039,7 +2050,7 @@ void Emulate(State& state){
                 state.flag.z=0;
             }
             state.flag.s=(0x80==(x&0x80));
-            // implememt parity
+            state.flag.p=parity(x,8);
             if(x<state.memory[pc+1]){
                 state.flag.cy=1;
             }else{
