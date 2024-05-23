@@ -804,6 +804,7 @@ int disassemble(uint8_t *buffer,int pc){
             break;
     }
     int var = buffer[pc];
+    cout<<"opbytes: "<<opbytes<<endl;
     // int code = 0xvar;
     // cout<<"program counter right now:"<<pc<<endl;
     // cout<<"byte read:"<<hex<<var<<endl;
@@ -842,6 +843,10 @@ class State{
 
 void UnimplementedInstruction(State& state){
     cout<<"Error: Unimplemented instruction"<<endl;
+    state.pc--;
+    disassemble(state.memory,state.pc);
+    cout<<endl;
+    exit(1);
     // exit(1);
 }
 //couldn't understand parity
@@ -858,7 +863,7 @@ int parity(int x, int size)
 	return (0 == (p & 0x1));
 }
 
-void Emulate(State& state){
+int Emulate(State& state){
      uint16_t pc = state.pc;
      //fetch opcode
      uint8_t opcode = state.memory[pc];
@@ -998,7 +1003,6 @@ void Emulate(State& state){
             state.d=state.memory[pc+1];
             state.pc+=2;
         }
-            UnimplementedInstruction(state); 
             break;
         case 0x12:
             UnimplementedInstruction(state); 
@@ -1156,7 +1160,7 @@ void Emulate(State& state){
         {
             //LXI SP,D16
             state.sp = state.memory[pc+1]<<8|state.memory[pc];
-            state.pc+=1;
+            state.pc+=2;
         }
             break;
         case 0x32:
@@ -1181,7 +1185,7 @@ void Emulate(State& state){
             //MVI M,D8
             uint16_t ptr = (state.h<<8)|state.l;
             state.memory[ptr] = state.memory[pc];
-            pc++;
+            state.pc++;
         }
             break;
         case 0x37:
@@ -1198,7 +1202,7 @@ void Emulate(State& state){
             //LDA ADR
             uint16_t ptr = (state.memory[pc+1]<<8)|(state.memory[pc]);
             state.a = state.memory[ptr];
-            pc+=2;
+            state.pc+=2;
         }
             break;
         case 0x3b:
@@ -1214,7 +1218,7 @@ void Emulate(State& state){
         {
             //MVI A,D8
             state.a = state.memory[pc];
-            pc+=1;
+            state.pc+=1;
         }
             break;
         case 0x3f:
@@ -1656,7 +1660,6 @@ void Emulate(State& state){
             state.flag.p=parity(state.a,8);
 
         }
-            UnimplementedInstruction(state); 
             break;
         case 0xb0:
             UnimplementedInstruction(state); 
@@ -1747,7 +1750,6 @@ void Emulate(State& state){
             state.memory[state.sp-2]=state.c;
             state.sp-=2;
         }
-            UnimplementedInstruction(state); 
             break;
         case 0xc6:
         //ADI D8
@@ -1814,7 +1816,6 @@ void Emulate(State& state){
             state.d=state.memory[state.sp+1];
             state.sp+=2;
         }
-            UnimplementedInstruction(state); 
             break;
         case 0xd2:
             UnimplementedInstruction(state); 
@@ -1822,7 +1823,7 @@ void Emulate(State& state){
         case 0xd3:
         {
             //OUT D8
-            pc+=1;
+            state.pc+=1;
         }
             break;
         case 0xd4:
@@ -1835,7 +1836,6 @@ void Emulate(State& state){
             state.memory[state.sp-2]=state.e;
             state.sp-=2;
         }
-            UnimplementedInstruction(state); 
             break;
         case 0xd6:
             UnimplementedInstruction(state); 
@@ -1898,7 +1898,7 @@ void Emulate(State& state){
         case 0xe6:
         {
             //ANI D8
-            uint8_t add = state.memory[pc+1];
+            uint8_t add = state.memory[pc];
             uint8_t x = state.a & add;
             state.a=x;
             state.flag.cy=0;
@@ -2032,7 +2032,6 @@ void Emulate(State& state){
             //EI
             state.int_enable=1;
         }
-            UnimplementedInstruction(state); 
             break;
         case 0xfc:
             UnimplementedInstruction(state); 
@@ -2043,7 +2042,7 @@ void Emulate(State& state){
         case 0xfe:
         {
             //CPI ADDR
-            uint8_t x = state.a - state.memory[pc+1];
+            uint8_t x = state.a - state.memory[pc];
             if(x==0){
                 state.flag.z=1;
             }else{
@@ -2065,25 +2064,33 @@ void Emulate(State& state){
             break;    
 }
     pc=state.pc;
-    cout<<"CY->"<<(int)state.flag.cy<<" P->"<<(int)state.flag.p<<" S->"<<(int)state.flag.s<<" Z->"<<(int)state.flag.z<<endl;
-    cout<<"A->"<<setw(2)<<setfill('0')<<hex<<(int)state.a;
-    cout<<" B->"<<setw(2)<<setfill('0')<<hex<<(int)state.b;
-    cout<<" C->"<<setw(2)<<setfill('0')<<hex<<(int)state.c;
-    cout<<" D->"<<setw(2)<<setfill('0')<<hex<<(int)state.d;
-    cout<<" E->"<<setw(2)<<setfill('0')<<hex<<(int)state.e;
-    cout<<" H->"<<setw(2)<<setfill('0')<<hex<<(int)state.h;
-    cout<<" L->"<<setw(2)<<setfill('0')<<hex<<(int)state.l;
-    cout<<" SP->"<<setw(4)<<setfill('0')<<hex<<(int)state.sp<<endl;
+    cout<<(state.flag.z ? 'z' : '.');
+    cout<<(state.flag.s ? 's' : '.');
+    cout<<(state.flag.p ? 'p' : '.');
+    cout<<(state.flag.cy ? 'c' : '.');
+    cout<<(state.flag.ac ? 'a' : '.');
+    cout<<"A "<<setw(2)<<setfill('0')<<hex<<(int)state.a;
+    cout<<" B "<<setw(2)<<setfill('0')<<hex<<(int)state.b;
+    cout<<" C "<<setw(2)<<setfill('0')<<hex<<(int)state.c;
+    cout<<" D "<<setw(2)<<setfill('0')<<hex<<(int)state.d;
+    cout<<" E "<<setw(2)<<setfill('0')<<hex<<(int)state.e;
+    cout<<" H "<<setw(2)<<setfill('0')<<hex<<(int)state.h;
+    cout<<" L "<<setw(2)<<setfill('0')<<hex<<(int)state.l;
+    cout<<" SP "<<setw(4)<<setfill('0')<<hex<<(int)state.sp<<endl;
+    return 0;
 }
 
 
 int main(){
+    State state = State();
+    state.memory=(uint8_t*)malloc(0x10000);
     string s= "space-invaders.rom";
     // string s= "invaders.h";
     ifstream file;
     file.open(s,ios::binary|ios::in);
     if(file.is_open()==false){
         return -1;
+        exit(1);
     }else{
         cout<<"file is opened now! first task done"<<endl;
         // seek the file to it's end
@@ -2092,21 +2099,21 @@ int main(){
         int fsize = file.tellg();
         // reset the seek to be at the beginning
         file.seekg(0,ios::beg);
-        uint8_t buffer[fsize]={0};
+        uint8_t* buffer=state.memory;
         // vector<uint8_t>buffer(fsize,0);
         for(int i=0;i<fsize;i++){
             // read each character of file in integar and save it in buffer
             buffer[i] = (uint8_t)file.get();
         }
         file.close();
-        State state = State();
-        state.memory=buffer;
-        for(int i=0;i<4;i++){
-            Emulate(state);
+
+
+        int val =0;
+        while(val==0){
+            val = Emulate(state);
         }
+        return 0;
     }
-    int n;
-    cin>>n;
 
     // Emulate(state);
 }
